@@ -2,11 +2,17 @@ import 'package:bacqpack/model/compartment.dart';
 
 class Backpack {
   String guid;
+  String userUid;
   String title;
   String base64Image;
   List<Compartment> compartments;
 
-  Backpack({this.guid, this.title, this.base64Image, this.compartments});
+  Backpack({
+    this.guid,
+    this.title,
+    this.base64Image,
+    this.compartments
+  });
 
   static List<Backpack> fromJsonList(List<dynamic> jsonList) {
     if (jsonList == null || jsonList.isEmpty) {
@@ -32,6 +38,7 @@ class Backpack {
     var backpack = Backpack();
 
     backpack.guid = json['Guid'];
+    backpack.userUid = json['UserUid'];
     backpack.title = json['Title'];
     backpack.base64Image = json['Base64Image'];
 
