@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "706523318655",
+    "project_id": "bacqpack-0000",
+    "storage_bucket": "bacqpack-0000.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:706523318655:android:7785b2ec24a1243726f24a",
+        "android_client_info": {
+          "package_name": "com.bacqpack.bacqpack"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "706523318655-5ukom0jqnbkdlmq6g6l0k91tek9abrjp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRZb-818OG8FtNuEs_u0HOc9kU7CIQNSY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "706523318655-5ukom0jqnbkdlmq6g6l0k91tek9abrjp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
