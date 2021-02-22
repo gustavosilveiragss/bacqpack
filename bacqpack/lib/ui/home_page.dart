@@ -115,45 +115,60 @@ class _HomePageState extends State<HomePage> {
       margin: EdgeInsets.symmetric(horizontal: 20),
       child: RawMaterialButton(
         constraints: BoxConstraints(
-            minWidth: _width,
-            maxWidth: _width,
-            minHeight: _height,
-            maxHeight: _height),
+          minWidth: _width,
+          maxWidth: _width,
+          minHeight: _height,
+          maxHeight: _height,
+        ),
         onPressed: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => Container()));
+            context,
+            MaterialPageRoute(
+              builder: (context) => Container(),
+            ),
+          );
         },
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(color: Color(0xff1ac988), width: 1.5)),
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(color: Color(0xff1ac988), width: 1.5),
+        ),
         padding: EdgeInsets.all(10),
-        child: Container(
-          alignment: Alignment.centerLeft,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                backpack.title,
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 5),
-                child: Text(
-                  '${backpack.compartments.length} compartments',
-                  style: TextStyle(
-                    fontSize: 13,
+        child: Row(
+          children: [
+            SvgPicture.asset(
+              'assets/svg/backpack_icons/${backpack.iconId}.svg',
+              height: 120,
+            ),
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.only(left: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    backpack.title,
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
-                ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 5),
+                    child: Text(
+                      '${backpack.compartments.length} compartments',
+                      style: TextStyle(
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '$itemCount items',
+                    style: TextStyle(
+                      fontSize: 13,
+                    ),
+                  )
+                ],
               ),
-              Text(
-                '$itemCount items',
-                style: TextStyle(
-                  fontSize: 13,
-                ),
-              )
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

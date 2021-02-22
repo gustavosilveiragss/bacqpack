@@ -4,14 +4,14 @@ class Backpack {
   String guid;
   String userUid;
   String title;
-  String base64Image;
+  String iconId;
   List<Compartment> compartments;
 
   Backpack({
     this.guid,
     this.title,
-    this.base64Image,
-    this.compartments
+    this.iconId,
+    this.compartments,
   });
 
   static List<Backpack> fromJsonList(List<dynamic> jsonList) {
@@ -40,7 +40,7 @@ class Backpack {
     backpack.guid = json['Guid'];
     backpack.userUid = json['UserUid'];
     backpack.title = json['Title'];
-    backpack.base64Image = json['Base64Image'];
+    backpack.iconId = json['IconId'];
 
     backpack.compartments = Compartment.fromJsonList(json['Compartments']);
 
