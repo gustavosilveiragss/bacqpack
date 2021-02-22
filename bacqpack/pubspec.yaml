@@ -35,6 +35,7 @@ dependencies:
   firebase_auth: ^0.20.0+1
   google_sign_in: ^4.5.9
   shared_preferences: ^0.5.12+4
+  flutter_speed_dial: ^2.1.1
 
 dev_dependencies:
   flutter_test:
@@ -59,8 +60,9 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/svg/logo.svg
-    - assets/svg/google_logo.svg
+    - assets/img/
+    - assets/svg/
+    - assets/svg/backpack_icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

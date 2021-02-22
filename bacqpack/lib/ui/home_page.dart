@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:bacqpack/model/backpack.dart';
@@ -29,6 +30,33 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(child: buildBody(context)),
+      floatingActionButton: SpeedDial(
+        icon: Icons.add,
+        overlayOpacity: 0.3,
+        backgroundColor: Color(0xff1ac988),
+        children: [
+          SpeedDialChild(
+            child: SvgPicture.asset(
+              "assets/svg/backpack_icons/backpack_add.svg",
+              height: 28,
+            ),
+            label: "Add backpack",
+            backgroundColor: Color(0xff34afc2),
+            labelBackgroundColor: Colors.white,
+            onTap: () {},
+          ),
+          SpeedDialChild(
+            child: SvgPicture.asset(
+              "assets/svg/checklist_add.svg",
+              height: 28,
+            ),
+            label: "Add checklist",
+            backgroundColor: Color(0xff00e34e),
+            labelBackgroundColor: Colors.white,
+            onTap: () {},
+          ),
+        ],
+      ),
     );
   }
 
