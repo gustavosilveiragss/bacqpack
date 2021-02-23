@@ -9,6 +9,7 @@ class Backpack {
 
   Backpack({
     this.guid,
+    this.userUid,
     this.title,
     this.iconId,
     this.compartments,
@@ -45,5 +46,21 @@ class Backpack {
     backpack.compartments = Compartment.fromJsonList(json['Compartments']);
 
     return backpack;
+  }
+
+  Map<String, dynamic> toJson() {
+    List<Map> jsonCompartments;
+
+    compartments?.forEach((e) {
+      jsonCompartments.add(e.toJson());
+    });
+
+    return {
+      'Guid': guid,
+      'UserUid': userUid,
+      'Title': title,
+      'IconId': iconId,
+      'Compartments': jsonCompartments
+    };
   }
 }

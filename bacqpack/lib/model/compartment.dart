@@ -1,11 +1,16 @@
 import 'package:bacqpack/model/item.dart';
+import 'package:flutter/material.dart';
 
 class Compartment {
   String guid;
   String title;
   List<Item> items;
 
-  Compartment({this.guid, this.title, this.items});
+  Compartment({
+    this.guid,
+    this.title,
+    this.items,
+  });
 
   static List<Compartment> fromJsonList(List<dynamic> jsonList) {
     if (jsonList == null || jsonList.isEmpty) {
@@ -36,5 +41,15 @@ class Compartment {
     compartment.items = Item.fromJsonList(json['Items']);
 
     return compartment;
+  }
+
+  Map<String, dynamic> toJson() {
+    List<Map> jsonItems;
+
+    items?.forEach((e) {
+      jsonItems.add(e.toJson());
+    });
+
+    return {'Guid': guid, 'Title': title, 'Compartments': jsonItems};
   }
 }

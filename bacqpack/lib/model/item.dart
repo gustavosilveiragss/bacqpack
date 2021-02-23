@@ -1,10 +1,12 @@
 class Item {
   String guid;
   String title;
+  String compartmentGuid;
 
   Item({
-    this.guid, 
-    this.title
+    this.guid,
+    this.title,
+    this.compartmentGuid,
   });
 
   static List<Item> fromJsonList(List<dynamic> jsonList) {
@@ -32,7 +34,16 @@ class Item {
 
     item.guid = json['Guid'];
     item.title = json['Title'];
+    item.compartmentGuid = json['CompartmentGuid'];
 
     return item;
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'Guid': guid,
+      'Title': title,
+      'CompartmentGuid': compartmentGuid,
+    };
   }
 }

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter_guid/flutter_guid.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:bacqpack/model/backpack.dart';
 import 'package:bacqpack/utils/session_variables.dart';
+import 'package:bacqpack/ui/backpack_manager.dart';
+import 'package:bacqpack/service/backpack_service.dart';
 
 final databaseReference = FirebaseDatabase.instance.reference();
 
@@ -43,7 +46,25 @@ class _HomePageState extends State<HomePage> {
             label: "Add backpack",
             backgroundColor: Color(0xff34afc2),
             labelBackgroundColor: Colors.white,
-            onTap: () {},
+            onTap: () {
+              var backpack = Backpack(
+                guid: Guid.newGuid.toString(),
+                userUid: SessionVariables.userUid,
+                title: "New backpack",
+                iconId: "backpack_1",
+              );
+
+              BackpackService.newBackpack(backpack, () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BackpackManager(backpack),
+                  ),
+                );
+
+                loadBackpacks();
+              });
+            },
           ),
           SpeedDialChild(
             child: SvgPicture.asset(
@@ -101,7 +122,7 @@ class _HomePageState extends State<HomePage> {
 
     var itemCount = 0;
 
-    backpack.compartments.forEach((e) {
+    backpack.compartments?.forEach((e) {
       itemCount += e.items.length;
     });
 
@@ -112,7 +133,7 @@ class _HomePageState extends State<HomePage> {
         borderRadius: BorderRadius.circular(10),
         color: Colors.white,
       ),
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      margin: EdgeInsets.fromLTRB(20, 0, 20, 10),
       child: RawMaterialButton(
         constraints: BoxConstraints(
           minWidth: _width,
@@ -124,7 +145,7 @@ class _HomePageState extends State<HomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => Container(),
+              builder: (context) => BackpackManager(backpack),
             ),
           );
         },
@@ -153,7 +174,7 @@ class _HomePageState extends State<HomePage> {
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 5),
                     child: Text(
-                      '${backpack.compartments.length} compartments',
+                      '${backpack.compartments?.length ?? 0} compartments',
                       style: TextStyle(
                         fontSize: 13,
                       ),
