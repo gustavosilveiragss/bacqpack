@@ -1,5 +1,4 @@
 import 'package:bacqpack/model/item.dart';
-import 'package:flutter/material.dart';
 
 class Compartment {
   String guid;

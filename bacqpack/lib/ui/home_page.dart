@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           SpeedDialChild(
             child: SvgPicture.asset(
-              "assets/svg/backpack_icons/backpack_add.svg",
+              "assets/svg/backpack_add.svg",
               height: 28,
             ),
             label: "Add backpack",

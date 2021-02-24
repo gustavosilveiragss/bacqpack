@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:core';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
@@ -19,17 +22,21 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    FirebaseDatabase.instance.setPersistenceEnabled(true);
+    loadSvg();
 
-    SessionVariables.initializeSession();
+    FirebaseDatabase.instance.setPersistenceEnabled(true);
   }
+
+  bool svgLoaded = false;
 
   @override
   Widget build(BuildContext context) {
+    SessionVariables.initializeSession(context);
+
     return FutureBuilder(
       future: Firebase.initializeApp(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
+        if (snapshot.connectionState == ConnectionState.done && svgLoaded) {
           SharedPreferences.getInstance().then((prefs) {
             if (prefs.getString("UserUid") != null) {
               Navigator.pop(context);
@@ -72,5 +79,28 @@ class _SplashScreenState extends State<SplashScreen> {
         width: MediaQuery.of(context).size.width,
       ),
     );
+  }
+
+  void loadSvg() async {
+    List<Future<dynamic>> futures = [];
+
+    var manifestContent =
+        await DefaultAssetBundle.of(context).loadString('AssetManifest.json');
+    var manifestMap = json.decode(manifestContent);
+
+    for (var key in manifestMap.keys) {
+      if (key.contains('svg/')) {
+        futures.add(precachePicture(
+          ExactAssetPicture(SvgPicture.svgStringDecoder, key),
+          null,
+        ));
+      }
+    }
+
+    Future.wait(futures);
+
+    setState(() {
+      svgLoaded = true;
+    });
   }
 }

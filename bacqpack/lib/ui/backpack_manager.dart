@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:bacqpack/model/backpack.dart';
+import 'package:bacqpack/ui/components/backpack_icon_modal.dart';
+
+import 'package:flutter_svg/flutter_svg.dart';
 
 class BackpackManager extends StatefulWidget {
   final Backpack backpack;
@@ -29,6 +32,69 @@ class _BackpackManagerState extends State<BackpackManager> {
   }
 
   Widget buildBody(BuildContext context) {
-    return Container();
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 30,
+          ),
+          SvgPicture.asset(
+            'assets/svg/logo.svg',
+            width: MediaQuery.of(context).size.width / 2,
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          Row(
+            children: [
+              Row(
+                children: [
+                  buildIcon(),
+                ],
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget buildIcon() {
+    return MaterialButton(
+      onPressed: () {
+        showDialog(context: context, child: BackpackIconModal());
+      },
+      padding: EdgeInsets.zero,
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: Color(0xff1ac988),
+                width: 1.5,
+              ),
+            ),
+            padding: EdgeInsets.all(5),
+            child: SvgPicture.asset(
+              'assets/svg/backpack_icons/${backpack.iconId}.svg',
+              width: MediaQuery.of(context).size.width / 3,
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.6),
+              ),
+              padding: EdgeInsets.all(2),
+              child: Icon(Icons.edit),
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
