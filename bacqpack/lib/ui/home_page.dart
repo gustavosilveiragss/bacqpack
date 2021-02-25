@@ -1,3 +1,4 @@
+import 'package:bacqpack/bloc/home_page_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_database/firebase_database.dart';
@@ -18,15 +19,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Backpack> backpacks = [];
+  var homeBloc = HomePageBloc();
 
-  bool loading = true;
+  List<Backpack> backpacks = [];
 
   @override
   void initState() {
     super.initState();
 
-    loadBackpacks();
+    homeBloc.getBackpacks();
   }
 
   @override
@@ -62,7 +63,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 );
 
-                loadBackpacks();
+                homeBloc.getBackpacks();
               });
             },
           ),
@@ -82,25 +83,38 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget buildBody(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 30,
-        ),
-        SvgPicture.asset(
-          'assets/svg/logo.svg',
-          width: MediaQuery.of(context).size.width / 2,
-        ),
-        buildBackpackList()
-      ],
+    return StreamBuilder(
+      stream: homeBloc.backpacks,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        backpacks = snapshot.data;
+
+        return Column(
+          children: [
+            SizedBox(
+              height: 30,
+            ),
+            SvgPicture.asset(
+              'assets/svg/logo.svg',
+              width: MediaQuery.of(context).size.width / 2,
+            ),
+            buildBackpackList()
+          ],
+        );
+      },
     );
   }
 
   Widget buildBackpackList() {
-    if (loading) {
-      return Container();
-    }
-
     List<Widget> backpacksWidgets = [];
 
     for (var backpack in backpacks) {
@@ -123,7 +137,7 @@ class _HomePageState extends State<HomePage> {
     var itemCount = 0;
 
     backpack.compartments?.forEach((e) {
-      itemCount += e.items.length;
+      itemCount += e.items?.length ?? 0;
     });
 
     return Container(
@@ -193,24 +207,5 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
-  }
-
-  void loadBackpacks() async {
-    List<Backpack> tempBackpacks = [];
-
-    var snapshot = await databaseReference.child("Backpacks").once();
-
-    for (var backpack in snapshot.value) {
-      if (backpack["UserUid"] != SessionVariables.userUid) {
-        continue;
-      }
-
-      tempBackpacks.add(Backpack.fromJson(backpack));
-    }
-
-    setState(() {
-      backpacks = tempBackpacks;
-      loading = false;
-    });
   }
 }

@@ -63,7 +63,7 @@ class _BackpackManagerState extends State<BackpackManager> {
   Widget buildIcon() {
     return MaterialButton(
       onPressed: () {
-        showDialog(context: context, child: BackpackIconModal());
+        showDialog(context: context, child: BackpackIconModal(backpack));
       },
       padding: EdgeInsets.zero,
       child: Stack(

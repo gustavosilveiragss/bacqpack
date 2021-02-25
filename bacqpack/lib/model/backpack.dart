@@ -49,7 +49,7 @@ class Backpack {
   }
 
   Map<String, dynamic> toJson() {
-    List<Map> jsonCompartments;
+    List<Map> jsonCompartments = [];
 
     compartments?.forEach((e) {
       jsonCompartments.add(e.toJson());

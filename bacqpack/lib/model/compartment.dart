@@ -43,12 +43,16 @@ class Compartment {
   }
 
   Map<String, dynamic> toJson() {
-    List<Map> jsonItems;
+    List<Map> jsonItems = [];
 
     items?.forEach((e) {
       jsonItems.add(e.toJson());
     });
 
-    return {'Guid': guid, 'Title': title, 'Compartments': jsonItems};
+    return {
+      'Guid': guid,
+      'Title': title,
+      'Items': jsonItems,
+    };
   }
 }

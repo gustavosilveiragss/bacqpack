@@ -1,17 +1,33 @@
 import 'dart:convert';
 
+import 'package:bacqpack/bloc/home_page_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:bacqpack/utils/session_variables.dart';
+import 'package:bacqpack/model/backpack.dart';
+import 'package:bacqpack/service/backpack_service.dart';
 
 class BackpackIconModal extends StatefulWidget {
+  final Backpack backpack;
+
+  BackpackIconModal(this.backpack);
+
   @override
   _BackpackIconModalState createState() => _BackpackIconModalState();
 }
 
 class _BackpackIconModalState extends State<BackpackIconModal> {
+  Backpack backpack;
+
+  @override
+  void initState() {
+    super.initState();
+
+    backpack = widget.backpack;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -35,27 +51,52 @@ class _BackpackIconModalState extends State<BackpackIconModal> {
 
     var manifestMap = json.decode(SessionVariables.manifestContent);
 
-    Widget buildIconContainer(String file) {
+    Widget buildIcon(String file) {
       return Container(
+        padding: EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: Color(0xff1ac988),
-            width: 1.5,
-          ),
         ),
-        padding: EdgeInsets.all(5),
-        margin: EdgeInsets.symmetric(vertical: 10),
-        child: SvgPicture.asset(
-          file,
-          width: 100,
+        child: MaterialButton(
+          padding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          onPressed: () {
+            backpack.iconId = file
+                .replaceAll("assets/svg/backpack_icons/", "")
+                .replaceAll(".svg", "");
+
+            BackpackService.updateBackpack(
+              backpack,
+              () {
+                var homeBloc = HomePageBloc();
+
+                homeBloc.getBackpacks();
+              },
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: Color(0xff1ac988),
+                width: 1.5,
+              ),
+            ),
+            padding: EdgeInsets.all(5),
+            child: SvgPicture.asset(
+              file,
+              width: 100,
+            ),
+          ),
         ),
       );
     }
 
     for (var key in manifestMap.keys) {
       if (key.contains('svg/backpack_icons')) {
-        icons.add(buildIconContainer(key));
+        icons.add(buildIcon(key));
       }
     }
 

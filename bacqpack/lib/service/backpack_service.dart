@@ -12,7 +12,25 @@ class BackpackService {
 
     backpacks.add(backpack.toJson());
 
-    databaseReference.child("Backpacks").set(backpacks);
+    await databaseReference.child("Backpacks").set(backpacks);
+
+    callback();
+  }
+
+  static void updateBackpack(Backpack backpack, Function callback) async {
+    var databaseReference = FirebaseDatabase.instance.reference();
+
+    var backpacks = (await databaseReference.child("Backpacks").once()).value;
+
+    for (var i = 0; i < backpacks.length; i++) {
+      if (backpacks[i]["Guid"] != backpack.guid) {
+        continue;
+      }
+
+      backpacks[i] = backpack.toJson();
+    }
+
+    await databaseReference.child("Backpacks").set(backpacks);
 
     callback();
   }
