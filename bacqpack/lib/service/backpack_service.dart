@@ -12,7 +12,7 @@ class BackpackService {
 
     backpacks.add(backpack.toJson());
 
-    await databaseReference.child("Backpacks").set(backpacks);
+    databaseReference.child("Backpacks").set(backpacks);
 
     callback();
   }
@@ -30,7 +30,7 @@ class BackpackService {
       backpacks[i] = backpack.toJson();
     }
 
-    await databaseReference.child("Backpacks").set(backpacks);
+    databaseReference.child("Backpacks").set(backpacks);
 
     callback();
   }

@@ -1,4 +1,3 @@
-import 'package:bacqpack/bloc/home_page_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_database/firebase_database.dart';
@@ -19,15 +18,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var homeBloc = HomePageBloc();
-
   List<Backpack> backpacks = [];
 
   @override
   void initState() {
     super.initState();
-
-    homeBloc.getBackpacks();
   }
 
   @override
@@ -62,8 +57,6 @@ class _HomePageState extends State<HomePage> {
                     builder: (context) => BackpackManager(backpack),
                   ),
                 );
-
-                homeBloc.getBackpacks();
               });
             },
           ),
@@ -84,7 +77,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget buildBody(BuildContext context) {
     return StreamBuilder(
-      stream: homeBloc.backpacks,
+      stream: databaseReference.onValue,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Container(
@@ -96,7 +89,13 @@ class _HomePageState extends State<HomePage> {
           );
         }
 
-        backpacks = snapshot.data;
+        var backpackMaps = snapshot.data.snapshot.value["Backpacks"];
+
+        backpacks = [];
+
+        for (var b in backpackMaps) {
+          backpacks.add(Backpack.fromJson(b));
+        }
 
         return Column(
           children: [

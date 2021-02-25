@@ -69,11 +69,7 @@ class _BackpackIconModalState extends State<BackpackIconModal> {
 
             BackpackService.updateBackpack(
               backpack,
-              () {
-                var homeBloc = HomePageBloc();
-
-                homeBloc.getBackpacks();
-              },
+              () {},
             );
           },
           child: Container(
