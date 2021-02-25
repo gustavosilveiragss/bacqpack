@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:bacqpack/model/backpack.dart';
 import 'package:bacqpack/ui/components/backpack_icon_modal.dart';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class BackpackManager extends StatefulWidget {
@@ -16,6 +17,8 @@ class BackpackManager extends StatefulWidget {
 
 class _BackpackManagerState extends State<BackpackManager> {
   Backpack backpack;
+
+  final databaseReference = FirebaseDatabase.instance.reference();
 
   @override
   void initState() {
@@ -32,31 +35,52 @@ class _BackpackManagerState extends State<BackpackManager> {
   }
 
   Widget buildBody(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10),
-      child: Column(
-        children: [
-          SizedBox(
-            height: 30,
-          ),
-          SvgPicture.asset(
-            'assets/svg/logo.svg',
-            width: MediaQuery.of(context).size.width / 2,
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          Row(
+    return StreamBuilder(
+      stream: databaseReference
+          .child("Backpacks")
+          .orderByChild("Guid")
+          .equalTo(backpack.guid)
+          .onValue,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        backpack = Backpack.fromJson(snapshot.data.snapshot.value[0]);
+
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          child: Column(
             children: [
+              SizedBox(
+                height: 30,
+              ),
+              SvgPicture.asset(
+                'assets/svg/logo.svg',
+                width: MediaQuery.of(context).size.width / 2,
+              ),
+              SizedBox(
+                height: 30,
+              ),
               Row(
                 children: [
-                  buildIcon(),
+                  Row(
+                    children: [
+                      buildIcon(),
+                    ],
+                  )
                 ],
               )
             ],
-          )
-        ],
-      ),
+          ),
+        );
+      },
     );
   }
 
