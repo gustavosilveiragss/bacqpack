@@ -1,3 +1,4 @@
+import 'package:bacqpack/service/backpack_service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bacqpack/model/backpack.dart';
@@ -52,7 +53,11 @@ class _BackpackManagerState extends State<BackpackManager> {
           );
         }
 
-        backpack = Backpack.fromJson(snapshot.data.snapshot.value[0]);
+        for (var e in snapshot.data.snapshot.value) {
+          if (e != null) {
+            backpack = Backpack.fromJson(e);
+          }
+        }
 
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 10),
@@ -69,12 +74,10 @@ class _BackpackManagerState extends State<BackpackManager> {
                 height: 30,
               ),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      buildIcon(),
-                    ],
-                  )
+                  buildIcon(),
+                  buildTitle(),
                 ],
               )
             ],
@@ -119,6 +122,28 @@ class _BackpackManagerState extends State<BackpackManager> {
           )
         ],
       ),
+    );
+  }
+
+  Widget buildTitle() {
+    return Expanded(
+      child: Container(
+          padding: EdgeInsets.only(left: 10),
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: "Title",
+                ),
+                initialValue: backpack.title,
+                onChanged: (v) {
+                  backpack.title = v;
+
+                  BackpackService.updateBackpack(backpack, () {});
+                },
+              ),
+            ],
+          )),
     );
   }
 }
