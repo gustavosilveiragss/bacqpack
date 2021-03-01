@@ -1,3 +1,4 @@
+import 'package:bacqpack/model/item.dart';
 import 'package:bacqpack/service/backpack_service.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +32,10 @@ class _BackpackManagerState extends State<BackpackManager> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(child: buildBody(context)),
+      body: DefaultTabController(
+        length: 2,
+        child: SafeArea(child: buildBody(context)),
+      ),
     );
   }
 
@@ -79,7 +83,11 @@ class _BackpackManagerState extends State<BackpackManager> {
                   buildIcon(),
                   buildTitle(),
                 ],
-              )
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              buildTabs()
             ],
           ),
         );
@@ -144,6 +152,177 @@ class _BackpackManagerState extends State<BackpackManager> {
               ),
             ],
           )),
+    );
+  }
+
+  Widget buildTabs() {
+    return Expanded(
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Color(0xff1ac988),
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              children: [
+                TabBar(
+                  onTap: (index) {},
+                  indicatorColor: Color(0xff1ac988),
+                  tabs: [
+                    Tab(
+                      child: Text(
+                        'Compartments',
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    Tab(
+                      child: Text(
+                        'Items',
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      buildCompartmentsView(),
+                      buildItemsView(),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 5,
+            right: 5,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Color(0xff34afc2),
+                borderRadius: BorderRadius.circular(90),
+              ),
+              padding: EdgeInsets.all(15),
+              child: Icon(Icons.add),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget buildCompartmentsView() {
+    if (backpack.compartments == null || backpack.compartments.isEmpty) {
+      return buildEmptyView("compartments");
+    }
+
+    var compartments = <Widget>[];
+
+    for (var compartment in backpack.compartments) {
+      var itemCount = compartment.items?.length ?? 0;
+
+      var widget = Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: MaterialButton(
+          padding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          onPressed: () {},
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: Color(0xff1ac988),
+                width: 1.5,
+              ),
+            ),
+            padding: EdgeInsets.all(10),
+            child: Column(
+              children: [
+                Text(
+                  compartment.title,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  "$itemCount items",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      compartments.add(widget);
+    }
+
+    return Padding(
+      padding: EdgeInsets.all(10),
+      child: SingleChildScrollView(
+        child: Wrap(
+          direction: Axis.horizontal,
+          spacing: 10,
+          children: compartments,
+        ),
+      ),
+    );
+  }
+
+  Widget buildItemsView() {
+    if (backpack.compartments == null || backpack.compartments.isEmpty) {
+      return buildEmptyView("compartments");
+    }
+
+    var items = <Item>[];
+
+    for (var compartment in backpack.compartments) {
+      if (compartment.items == null) {
+        continue;
+      }
+
+      items.addAll(compartment.items);
+    }
+
+    if (items.isEmpty) {
+      return buildEmptyView("items");
+    }
+
+    return Container();
+  }
+
+  Widget buildEmptyView(String content) {
+    return Center(
+      child: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: "This backpack has no $content yet\nclick ",
+            ),
+            WidgetSpan(
+              child: Icon(
+                Icons.add,
+                size: 15,
+              ),
+            ),
+            TextSpan(
+              text: " to add the first one",
+            ),
+          ],
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+      ),
     );
   }
 }
