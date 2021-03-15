@@ -1,29 +1,35 @@
 import 'package:bacqpack/model/backpack.dart';
 import 'package:bacqpack/model/compartment.dart';
+import 'package:bacqpack/model/item.dart';
 import 'package:bacqpack/service/backpack_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 
-class AddCompartmentModal extends StatefulWidget {
-  final Compartment compartment;
+class AddItemModal extends StatefulWidget {
+  final Item item;
   final Backpack backpack;
 
-  AddCompartmentModal(this.backpack, {this.compartment});
+  AddItemModal(this.backpack, {this.item});
 
   @override
-  _AddCompartmentModalState createState() => _AddCompartmentModalState();
+  _AddItemModalState createState() => _AddItemModalState();
 }
 
-class _AddCompartmentModalState extends State<AddCompartmentModal> {
-  Compartment compartment;
+class _AddItemModalState extends State<AddItemModal> {
+  Item item;
   Backpack backpack;
+  Compartment compartment;
 
   @override
   void initState() {
     super.initState();
 
     backpack = widget.backpack;
-    compartment = widget.compartment ?? Compartment();
+    item = widget.item ?? Item();
+
+    if (item.compartmentGuid != null && item.compartmentGuid != "") {
+      compartment = backpack.compartments.singleWhere((e) => e.guid == item.compartmentGuid);
+    }
   }
 
   @override
@@ -42,7 +48,7 @@ class _AddCompartmentModalState extends State<AddCompartmentModal> {
         child: Column(
           children: [
             Text(
-              compartment.guid != null && compartment.guid != "" ? "Edit Compartment" : "Add Compartment",
+              item.guid != null && item.guid != "" ? "Edit Item" : "Add Item",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 20,
@@ -67,13 +73,50 @@ class _AddCompartmentModalState extends State<AddCompartmentModal> {
                           width: 1,
                         ),
                       ),
-                      labelText: 'Compartment title',
+                      labelText: 'Item title',
                     ),
-                    initialValue: compartment.title ?? "",
+                    initialValue: item.title ?? "",
                     onChanged: (v) {
-                      compartment.title = v;
+                      item.title = v;
                     },
                   ),
+                  DropdownButton<String>(
+                    hint: Text(
+                      "Pick the item's compartment",
+                    ),
+                    isExpanded: true,
+                    value: compartment?.title,
+                    items: backpack.compartments.map((Compartment c) {
+                      return DropdownMenuItem<String>(
+                        value: c.title,
+                        child: Text(
+                          c.title,
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (c) {
+                      setState(() {
+                        for (var i = 0; i < backpack.compartments.length; i++) {
+                          if (backpack.compartments[i].title.toLowerCase() != c.toLowerCase()) {
+                            if (item.guid != null && item.guid != "") {
+                              backpack.compartments[i].items.removeWhere((e) => e.guid == item.guid);
+                            }
+
+                            continue;
+                          }
+
+                          compartment = backpack.compartments[i];
+                          item.compartmentGuid = compartment.guid;
+
+                          if (compartment.items == null) {
+                            compartment.items = <Item>[];
+                          }
+
+                          compartment.items.add(item);
+                        }
+                      });
+                    },
+                  )
                 ],
               ),
             ),
@@ -81,7 +124,7 @@ class _AddCompartmentModalState extends State<AddCompartmentModal> {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                compartment.guid != null && compartment.guid != ""
+                item.guid != null && item.guid != ""
                     ? MaterialButton(
                         onPressed: () {
                           for (var i = 0; i < backpack.compartments.length; i++) {
@@ -89,7 +132,7 @@ class _AddCompartmentModalState extends State<AddCompartmentModal> {
                               continue;
                             }
 
-                            backpack.compartments.removeAt(i);
+                            backpack.compartments[i].items.removeWhere((e) => e.guid == item.guid);
                           }
 
                           BackpackService.updateBackpack(backpack, () {});
@@ -108,26 +151,34 @@ class _AddCompartmentModalState extends State<AddCompartmentModal> {
                     : Container(),
                 MaterialButton(
                   onPressed: () {
-                    if (compartment.guid == null || compartment.guid == "") {
-                      // new compartment
+                    if (compartment.items == null) {
+                      compartment.items = <Item>[];
+                    }
 
-                      compartment.guid = Guid.newGuid.toString();
+                    if (item.guid == null || item.guid == "") {
+                      // new item
 
-                      if (backpack.compartments == null) {
-                        backpack.compartments = <Compartment>[];
-                      }
+                      item.guid = Guid.newGuid.toString();
 
-                      backpack.compartments.add(compartment);
+                      compartment.items.add(item);
                     } else {
-                      // edit compartment
+                      // edit item
 
-                      for (var i = 0; i < backpack.compartments.length; i++) {
-                        if (backpack.compartments[i].guid != compartment.guid) {
+                      for (var i = 0; i < compartment.items.length; i++) {
+                        if (compartment.items[i].guid != item.guid) {
                           continue;
                         }
 
-                        backpack.compartments[i] = compartment;
+                        compartment.items[i] = item;
                       }
+                    }
+
+                    for (var i = 0; i < backpack.compartments.length; i++) {
+                      if (backpack.compartments[i].guid != compartment.guid) {
+                        continue;
+                      }
+
+                      backpack.compartments[i] = compartment;
                     }
 
                     BackpackService.updateBackpack(backpack, () {});
@@ -137,7 +188,7 @@ class _AddCompartmentModalState extends State<AddCompartmentModal> {
                   padding: EdgeInsets.symmetric(horizontal: 5),
                   minWidth: 0,
                   child: Text(
-                    compartment.guid != null && compartment.guid != "" ? "Edit" : "Add",
+                    item.guid != null && item.guid != "" ? "Edit" : "Add",
                     style: TextStyle(
                       color: Color(0xff00e34e),
                     ),

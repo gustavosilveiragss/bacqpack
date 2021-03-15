@@ -1,4 +1,5 @@
 import 'package:bacqpack/ui/components/add_compartment_modal.dart';
+import 'package:bacqpack/ui/components/add_item_modal.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bacqpack/model/backpack.dart';
@@ -17,8 +18,7 @@ class BackpackManager extends StatefulWidget {
   _BackpackManagerState createState() => _BackpackManagerState();
 }
 
-class _BackpackManagerState extends State<BackpackManager>
-    with TickerProviderStateMixin {
+class _BackpackManagerState extends State<BackpackManager> with TickerProviderStateMixin {
   Backpack backpack;
 
   final databaseReference = FirebaseDatabase.instance.reference();
@@ -73,11 +73,7 @@ class _BackpackManagerState extends State<BackpackManager>
 
   Widget buildBody(BuildContext context) {
     return StreamBuilder(
-      stream: databaseReference
-          .child("Backpacks")
-          .orderByChild("Guid")
-          .equalTo(backpack.guid)
-          .onValue,
+      stream: databaseReference.child("Backpacks").orderByChild("Guid").equalTo(backpack.guid).onValue,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Container(
@@ -235,6 +231,11 @@ class _BackpackManagerState extends State<BackpackManager>
                 }
 
                 // add item
+
+                showDialog(
+                  context: context,
+                  child: AddItemModal(backpack),
+                );
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -346,7 +347,12 @@ class _BackpackManagerState extends State<BackpackManager>
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
-            onPressed: () {},
+            onPressed: () {
+              showDialog(
+                context: context,
+                child: AddItemModal(backpack, item: item),
+              );
+            },
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -367,7 +373,7 @@ class _BackpackManagerState extends State<BackpackManager>
                     height: 10,
                   ),
                   Text(
-                    "in ${compartment.title} compartment",
+                    "in ${compartment.title}",
                     textAlign: TextAlign.center,
                   ),
                 ],
