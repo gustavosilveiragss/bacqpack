@@ -159,8 +159,6 @@ class _AddItemModalState extends State<AddItemModal> {
                       // new item
 
                       item.guid = Guid.newGuid.toString();
-
-                      compartment.items.add(item);
                     } else {
                       // edit item
 
