@@ -1,9 +1,9 @@
-import 'package:bacqpack/model/item.dart';
-import 'package:bacqpack/service/backpack_service.dart';
+import 'package:bacqpack/ui/components/add_compartment_modal.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bacqpack/model/backpack.dart';
 import 'package:bacqpack/ui/components/backpack_icon_modal.dart';
+import 'package:bacqpack/service/backpack_service.dart';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,14 +17,46 @@ class BackpackManager extends StatefulWidget {
   _BackpackManagerState createState() => _BackpackManagerState();
 }
 
-class _BackpackManagerState extends State<BackpackManager> {
+class _BackpackManagerState extends State<BackpackManager>
+    with TickerProviderStateMixin {
   Backpack backpack;
 
   final databaseReference = FirebaseDatabase.instance.reference();
 
+  var tabs = <Tab>[
+    Tab(
+      child: Text(
+        'Compartments',
+        style: TextStyle(
+          color: Colors.black,
+        ),
+      ),
+    ),
+    Tab(
+      child: Text(
+        'Items',
+        style: TextStyle(
+          color: Colors.black,
+        ),
+      ),
+    ),
+  ];
+
+  int currentTab = 0;
+
+  TabController tabController;
+
   @override
   void initState() {
     super.initState();
+
+    tabController = TabController(length: tabs.length, vsync: this);
+
+    tabController.addListener(() {
+      setState(() {
+        currentTab = tabController.index;
+      });
+    });
 
     backpack = widget.backpack;
   }
@@ -171,27 +203,12 @@ class _BackpackManagerState extends State<BackpackManager> {
                 TabBar(
                   onTap: (index) {},
                   indicatorColor: Color(0xff1ac988),
-                  tabs: [
-                    Tab(
-                      child: Text(
-                        'Compartments',
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        'Items',
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ],
+                  controller: tabController,
+                  tabs: tabs,
                 ),
                 Expanded(
                   child: TabBarView(
+                    controller: tabController,
                     children: [
                       buildCompartmentsView(),
                       buildItemsView(),
@@ -204,13 +221,31 @@ class _BackpackManagerState extends State<BackpackManager> {
           Positioned(
             bottom: 5,
             right: 5,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xff34afc2),
-                borderRadius: BorderRadius.circular(90),
+            child: GestureDetector(
+              onTap: () {
+                if (currentTab == 0) {
+                  // add compartment
+
+                  showDialog(
+                    context: context,
+                    child: AddCompartmentModal((test) {
+                      print(test);
+                    }),
+                  );
+
+                  return;
+                }
+
+                // add item
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color(0xff34afc2),
+                  borderRadius: BorderRadius.circular(90),
+                ),
+                padding: EdgeInsets.all(15),
+                child: Icon(Icons.add),
               ),
-              padding: EdgeInsets.all(15),
-              child: Icon(Icons.add),
             ),
           )
         ],
@@ -239,6 +274,8 @@ class _BackpackManagerState extends State<BackpackManager> {
           ),
           onPressed: () {},
           child: Container(
+            width: 179.2,
+            height: 130,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
@@ -251,10 +288,15 @@ class _BackpackManagerState extends State<BackpackManager> {
               children: [
                 Text(
                   compartment.title,
+                  textAlign: TextAlign.center,
                   style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 10,
                 ),
                 Text(
                   "$itemCount items",
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
@@ -282,21 +324,73 @@ class _BackpackManagerState extends State<BackpackManager> {
       return buildEmptyView("compartments");
     }
 
-    var items = <Item>[];
+    var items = <Widget>[];
 
     for (var compartment in backpack.compartments) {
       if (compartment.items == null) {
         continue;
       }
 
-      items.addAll(compartment.items);
+      for (var item in compartment.items) {
+        var widget = Container(
+          width: 179.2,
+          height: 130,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: MaterialButton(
+            padding: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            onPressed: () {},
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Color(0xff1ac988),
+                  width: 1.5,
+                ),
+              ),
+              padding: EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  Text(
+                    item.title,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "in ${compartment.title} compartment",
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        items.add(widget);
+      }
     }
 
     if (items.isEmpty) {
       return buildEmptyView("items");
     }
 
-    return Container();
+    return Padding(
+      padding: EdgeInsets.all(10),
+      child: SingleChildScrollView(
+        child: Wrap(
+          direction: Axis.horizontal,
+          spacing: 10,
+          children: items,
+        ),
+      ),
+    );
   }
 
   Widget buildEmptyView(String content) {
