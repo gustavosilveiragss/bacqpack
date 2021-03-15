@@ -228,9 +228,7 @@ class _BackpackManagerState extends State<BackpackManager>
 
                   showDialog(
                     context: context,
-                    child: AddCompartmentModal((test) {
-                      print(test);
-                    }),
+                    child: AddCompartmentModal(backpack),
                   );
 
                   return;
@@ -272,7 +270,12 @@ class _BackpackManagerState extends State<BackpackManager>
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          onPressed: () {},
+          onPressed: () {
+            showDialog(
+              context: context,
+              child: AddCompartmentModal(backpack, compartment: compartment),
+            );
+          },
           child: Container(
             width: 179.2,
             height: 130,
