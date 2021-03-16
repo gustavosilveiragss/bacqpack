@@ -2,6 +2,8 @@ import 'package:bacqpack/model/backpack.dart';
 import 'package:bacqpack/model/compartment.dart';
 import 'package:bacqpack/model/item.dart';
 import 'package:bacqpack/service/backpack_service.dart';
+import 'package:bacqpack/ui/components/error_modal.dart';
+import 'package:bacqpack/utils/helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 
@@ -38,7 +40,7 @@ class _AddItemModalState extends State<AddItemModal> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      elevation: 0,
+      elevation: 10,
       backgroundColor: Colors.white,
       child: Container(
         width: MediaQuery.of(context).size.width,
@@ -151,6 +153,12 @@ class _AddItemModalState extends State<AddItemModal> {
                     : Container(),
                 MaterialButton(
                   onPressed: () {
+                    if (item.title == null || item.title == "") {
+                      Helper.showError(context, "Add the item's title");
+
+                      return;
+                    }
+
                     if (compartment.items == null) {
                       compartment.items = <Item>[];
                     }

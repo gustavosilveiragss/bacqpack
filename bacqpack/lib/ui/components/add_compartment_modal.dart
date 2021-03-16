@@ -1,6 +1,7 @@
 import 'package:bacqpack/model/backpack.dart';
 import 'package:bacqpack/model/compartment.dart';
 import 'package:bacqpack/service/backpack_service.dart';
+import 'package:bacqpack/utils/helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 
@@ -32,7 +33,7 @@ class _AddCompartmentModalState extends State<AddCompartmentModal> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      elevation: 0,
+      elevation: 1,
       backgroundColor: Colors.white,
       child: Container(
         width: MediaQuery.of(context).size.width,
@@ -108,6 +109,12 @@ class _AddCompartmentModalState extends State<AddCompartmentModal> {
                     : Container(),
                 MaterialButton(
                   onPressed: () {
+                    if (compartment.title == null || compartment.title == "") {
+                      Helper.showError(context, "Add the compartment's title");
+
+                      return;
+                    }
+
                     if (compartment.guid == null || compartment.guid == "") {
                       // new compartment
 
