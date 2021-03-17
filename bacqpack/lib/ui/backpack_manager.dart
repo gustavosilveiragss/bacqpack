@@ -53,13 +53,13 @@ class _BackpackManagerState extends State<BackpackManager> with TickerProviderSt
 
     tabController = TabController(length: tabs.length, vsync: this);
 
+    backpack = widget.backpack;
+
     tabController.addListener(() {
       setState(() {
         currentTab = tabController.index;
       });
     });
-
-    backpack = widget.backpack;
   }
 
   @override
@@ -226,7 +226,7 @@ class _BackpackManagerState extends State<BackpackManager> with TickerProviderSt
             right: 5,
             child: GestureDetector(
               onTap: () {
-                if (currentTab == 0) {
+                if (currentTab == 0 || backpack.compartments == null || backpack.compartments.isEmpty) {
                   // add compartment
 
                   showDialog(
