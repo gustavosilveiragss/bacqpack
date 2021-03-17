@@ -2,6 +2,7 @@ import 'package:bacqpack/model/backpack.dart';
 import 'package:bacqpack/model/compartment.dart';
 import 'package:bacqpack/service/backpack_service.dart';
 import 'package:bacqpack/utils/helper.dart';
+import 'package:bacqpack/utils/session_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 
@@ -33,126 +34,166 @@ class _AddCompartmentModalState extends State<AddCompartmentModal> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      elevation: 1,
-      backgroundColor: Colors.white,
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        height: 200,
-        margin: EdgeInsets.all(20),
-        color: Colors.white,
-        child: Column(
-          children: [
-            Text(
-              compartment.guid != null && compartment.guid != "" ? "Edit Compartment" : "Add Compartment",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextFormField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(0xff4f95fc),
-                          width: 1,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(0xff4f95fc),
-                          width: 1,
-                        ),
-                      ),
-                      labelText: 'Compartment title',
-                    ),
-                    initialValue: compartment.title ?? "",
-                    onChanged: (v) {
-                      compartment.title = v;
-                    },
-                  ),
-                ],
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      insetPadding: EdgeInsets.zero,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Builder(
+          builder: (context) {
+            SessionVariables.lastPageContext = context;
+
+            return Stack(
               children: [
-                compartment.guid != null && compartment.guid != ""
-                    ? MaterialButton(
-                        onPressed: () {
-                          for (var i = 0; i < backpack.compartments.length; i++) {
-                            if (backpack.compartments[i].guid != compartment.guid) {
-                              continue;
-                            }
-
-                            backpack.compartments.removeAt(i);
-                          }
-
-                          BackpackService.updateBackpack(backpack, () {});
-
-                          Navigator.pop(context);
-                        },
-                        padding: EdgeInsets.symmetric(horizontal: 5),
-                        minWidth: 0,
-                        child: Text(
-                          "Remove",
-                          style: TextStyle(
-                            color: Colors.red,
-                          ),
+                Container(
+                  height: MediaQuery.of(context).size.height,
+                  child: Stack(
+                    children: [
+                      Container(
+                        height: MediaQuery.of(context).size.height,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
                         ),
-                      )
-                    : Container(),
-                MaterialButton(
-                  onPressed: () {
-                    if (compartment.title == null || compartment.title == "") {
-                      Helper.showError(context, "Add the compartment's title");
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 300,
+                            margin: EdgeInsets.all(10),
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  compartment.guid != null && compartment.guid != ""
+                                      ? "Edit Compartment"
+                                      : "Add Compartment",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      TextFormField(
+                                        decoration: InputDecoration(
+                                          border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Color(0xff4f95fc),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Color(0xff4f95fc),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          labelText: 'Compartment title',
+                                        ),
+                                        initialValue: compartment.title ?? "",
+                                        onChanged: (v) {
+                                          compartment.title = v;
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    compartment.guid != null && compartment.guid != ""
+                                        ? MaterialButton(
+                                            onPressed: () {
+                                              for (var i = 0; i < backpack.compartments.length; i++) {
+                                                if (backpack.compartments[i].guid != compartment.guid) {
+                                                  continue;
+                                                }
 
-                      return;
-                    }
+                                                backpack.compartments.removeAt(i);
+                                              }
 
-                    if (compartment.guid == null || compartment.guid == "") {
-                      // new compartment
+                                              BackpackService.updateBackpack(backpack, () {});
 
-                      compartment.guid = Guid.newGuid.toString();
+                                              Navigator.pop(context);
+                                            },
+                                            padding: EdgeInsets.symmetric(horizontal: 5),
+                                            minWidth: 0,
+                                            child: Text(
+                                              "Remove",
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          )
+                                        : Container(),
+                                    MaterialButton(
+                                      onPressed: () {
+                                        if (compartment.title == null || compartment.title == "") {
+                                          Helper.showError("Add the compartment's title");
 
-                      if (backpack.compartments == null) {
-                        backpack.compartments = <Compartment>[];
-                      }
+                                          return;
+                                        }
 
-                      backpack.compartments.add(compartment);
-                    } else {
-                      // edit compartment
+                                        if (compartment.guid == null || compartment.guid == "") {
+                                          // new compartment
 
-                      for (var i = 0; i < backpack.compartments.length; i++) {
-                        if (backpack.compartments[i].guid != compartment.guid) {
-                          continue;
-                        }
+                                          compartment.guid = Guid.newGuid.toString();
 
-                        backpack.compartments[i] = compartment;
-                      }
-                    }
+                                          if (backpack.compartments == null) {
+                                            backpack.compartments = <Compartment>[];
+                                          }
 
-                    BackpackService.updateBackpack(backpack, () {});
+                                          backpack.compartments.add(compartment);
+                                        } else {
+                                          // edit compartment
 
-                    Navigator.pop(context);
-                  },
-                  padding: EdgeInsets.symmetric(horizontal: 5),
-                  minWidth: 0,
-                  child: Text(
-                    compartment.guid != null && compartment.guid != "" ? "Edit" : "Add",
-                    style: TextStyle(
-                      color: Color(0xff00e34e),
-                    ),
+                                          for (var i = 0; i < backpack.compartments.length; i++) {
+                                            if (backpack.compartments[i].guid != compartment.guid) {
+                                              continue;
+                                            }
+
+                                            backpack.compartments[i] = compartment;
+                                          }
+                                        }
+
+                                        BackpackService.updateBackpack(backpack, () {});
+
+                                        Navigator.pop(context);
+                                      },
+                                      padding: EdgeInsets.symmetric(horizontal: 5),
+                                      minWidth: 0,
+                                      child: Text(
+                                        compartment.guid != null && compartment.guid != "" ? "Edit" : "Add",
+                                        style: TextStyle(
+                                          color: Color(0xff00e34e),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
-            )
-          ],
+            );
+          },
         ),
       ),
     );

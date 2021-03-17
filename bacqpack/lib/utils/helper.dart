@@ -1,26 +1,41 @@
-import 'package:bacqpack/ui/components/error_modal.dart';
+import 'package:bacqpack/utils/session_variables.dart';
 import 'package:flutter/material.dart';
 
 class Helper {
-  static void showError(BuildContext context, String message) {
-    showGeneralDialog(
-      context: context,
-      barrierColor: Colors.transparent,
-      barrierDismissible: false,
-      //transitionDuration: Duration(milliseconds: 800),
-      pageBuilder: (context, anim1, anim2) {
-        Future.delayed(Duration(seconds: 8), () {
-          //Navigator.of(context).pop(true);
-        });
-
-        return ErrorModal(message);
-      },
-      /*transitionBuilder: (context, anim1, anim2, child) {
-        return SlideTransition(
-          position: Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim1),
-          child: child,
-        );
-      },*/
+  static void showError(String message) {
+    final snackBar = SnackBar(
+      elevation: 20,
+      backgroundColor: Colors.red,
+      behavior: SnackBarBehavior.floating,
+      content: Row(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 2.0,
+                color: Colors.white,
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(90)),
+            ),
+            child: Transform.rotate(
+              angle: 180,
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Text(
+            message,
+            style: TextStyle(color: Colors.white),
+          )
+        ],
+      ),
     );
+
+    Scaffold.of(SessionVariables.lastPageContext).showSnackBar(snackBar);
   }
 }
