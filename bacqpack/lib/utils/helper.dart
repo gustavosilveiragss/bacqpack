@@ -2,11 +2,11 @@ import 'package:bacqpack/utils/session_variables.dart';
 import 'package:flutter/material.dart';
 
 class Helper {
-  static void showError(String message) {
+  static void showError(String message, {bool floating = true}) {
     final snackBar = SnackBar(
       elevation: 20,
       backgroundColor: Colors.red,
-      behavior: SnackBarBehavior.floating,
+      behavior: floating ? SnackBarBehavior.floating : SnackBarBehavior.fixed,
       content: Row(
         children: [
           Container(

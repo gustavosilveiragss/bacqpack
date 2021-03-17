@@ -17,6 +17,20 @@ class BackpackService {
     callback();
   }
 
+  static void deleteBackpack(Backpack backpack, Function callback) async {
+    var databaseReference = FirebaseDatabase.instance.reference();
+
+    var snapshot = await databaseReference.child("Backpacks").once();
+
+    var backpacks = List.of(snapshot.value);
+
+    backpacks.removeWhere((e) => e["Guid"] == backpack.guid);
+
+    databaseReference.child("Backpacks").set(backpacks);
+
+    callback();
+  }
+
   static void updateBackpack(Backpack backpack, Function callback) async {
     var databaseReference = FirebaseDatabase.instance.reference();
 

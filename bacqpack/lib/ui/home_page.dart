@@ -1,9 +1,11 @@
+import 'package:bacqpack/utils/helper.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:popup_menu/popup_menu.dart';
 
 import 'package:bacqpack/model/backpack.dart';
 import 'package:bacqpack/utils/session_variables.dart';
@@ -28,7 +30,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(child: buildBody(context)),
+      body: Builder(builder: (context) {
+        SessionVariables.lastPageContext = context;
+
+        return SafeArea(child: buildBody(context));
+      }),
       floatingActionButton: SpeedDial(
         icon: Icons.add,
         overlayOpacity: 0.3,
@@ -139,33 +145,53 @@ class _HomePageState extends State<HomePage> {
       itemCount += e.items?.length ?? 0;
     });
 
-    return Container(
-      height: _height,
-      width: _width,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.white,
-      ),
-      margin: EdgeInsets.fromLTRB(20, 0, 20, 10),
-      child: RawMaterialButton(
-        constraints: BoxConstraints(
-          minWidth: _width,
-          maxWidth: _width,
-          minHeight: _height,
-          maxHeight: _height,
-        ),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => BackpackManager(backpack),
+    PopupMenu.context = context;
+
+    void showPopup(Offset offset) {
+      PopupMenu menu = PopupMenu(
+        maxColumn: 1,
+        items: [
+          MenuItem(
+            title: 'Delete',
+            image: Icon(
+              Icons.delete,
+              color: Colors.white,
             ),
-          );
+          ),
+        ],
+        onClickMenu: (MenuItemProvider item) {
+          BackpackService.deleteBackpack(backpack, () {
+            Helper.showError("${backpack.title} deleted", floating: false);
+          });
         },
-        shape: RoundedRectangleBorder(
+      );
+      menu.show(rect: Rect.fromPoints(offset, offset));
+    }
+
+    return GestureDetector(
+      onLongPressEnd: (LongPressEndDetails details) {
+        showPopup(details.globalPosition);
+      },
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BackpackManager(backpack),
+          ),
+        );
+      },
+      child: Container(
+        height: _height,
+        width: _width,
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: Color(0xff1ac988), width: 1.5),
+          border: Border.all(
+            color: Color(0xff1ac988),
+            width: 1.5,
+          ),
+          color: Colors.white,
         ),
+        margin: EdgeInsets.fromLTRB(20, 0, 20, 10),
         padding: EdgeInsets.all(10),
         child: Row(
           children: [
