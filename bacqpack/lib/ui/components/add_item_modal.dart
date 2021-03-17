@@ -46,207 +46,211 @@ class _AddItemModalState extends State<AddItemModal> {
           builder: (context) {
             SessionVariables.lastPageContext = context;
 
-            return Stack(
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height,
-                  child: Stack(
-                    children: [
-                      Container(
-                        height: MediaQuery.of(context).size.height,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
+            return Container(
+              child: Stack(
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height,
+                    child: Stack(
+                      children: [
+                        Container(
+                          height: MediaQuery.of(context).size.height,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                          ),
                         ),
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: 300,
-                            margin: EdgeInsets.all(10),
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.white,
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  item.guid != null && item.guid != "" ? "Edit Item" : "Add Item",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 300,
+                              margin: EdgeInsets.all(10),
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.white,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    item.guid != null && item.guid != "" ? "Edit Item" : "Add Item",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        TextFormField(
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                color: Color(0xff4f95fc),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                color: Color(0xff4f95fc),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            labelText: 'Item title',
+                                          ),
+                                          initialValue: item.title ?? "",
+                                          onChanged: (v) {
+                                            item.title = v;
+                                          },
+                                        ),
+                                        DropdownButton<String>(
+                                          hint: Text(
+                                            "Pick the item's compartment",
+                                          ),
+                                          isExpanded: true,
+                                          value: compartment?.title,
+                                          items: backpack.compartments.map((Compartment c) {
+                                            return DropdownMenuItem<String>(
+                                              value: c.title,
+                                              child: Text(
+                                                c.title,
+                                              ),
+                                            );
+                                          }).toList(),
+                                          onChanged: (c) {
+                                            setState(() {
+                                              for (var i = 0; i < backpack.compartments.length; i++) {
+                                                if (backpack.compartments[i].title.toLowerCase() !=
+                                                    c.toLowerCase()) {
+                                                  if (item.guid != null && item.guid != "") {
+                                                    backpack.compartments[i].items
+                                                        .removeWhere((e) => e.guid == item.guid);
+                                                  }
+
+                                                  continue;
+                                                }
+
+                                                compartment = backpack.compartments[i];
+                                                item.compartmentGuid = compartment.guid;
+
+                                                if (compartment.items == null) {
+                                                  compartment.items = <Item>[];
+                                                }
+
+                                                compartment.items.add(item);
+                                              }
+                                            });
+                                          },
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
-                                      TextFormField(
-                                        decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color(0xff4f95fc),
-                                              width: 1,
-                                            ),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color(0xff4f95fc),
-                                              width: 1,
-                                            ),
-                                          ),
-                                          labelText: 'Item title',
-                                        ),
-                                        initialValue: item.title ?? "",
-                                        onChanged: (v) {
-                                          item.title = v;
-                                        },
-                                      ),
-                                      DropdownButton<String>(
-                                        hint: Text(
-                                          "Pick the item's compartment",
-                                        ),
-                                        isExpanded: true,
-                                        value: compartment?.title,
-                                        items: backpack.compartments.map((Compartment c) {
-                                          return DropdownMenuItem<String>(
-                                            value: c.title,
-                                            child: Text(
-                                              c.title,
-                                            ),
-                                          );
-                                        }).toList(),
-                                        onChanged: (c) {
-                                          setState(() {
-                                            for (var i = 0; i < backpack.compartments.length; i++) {
-                                              if (backpack.compartments[i].title.toLowerCase() !=
-                                                  c.toLowerCase()) {
-                                                if (item.guid != null && item.guid != "") {
+                                      item.guid != null && item.guid != ""
+                                          ? MaterialButton(
+                                              onPressed: () {
+                                                for (var i = 0; i < backpack.compartments.length; i++) {
+                                                  if (backpack.compartments[i].guid != compartment.guid) {
+                                                    continue;
+                                                  }
+
                                                   backpack.compartments[i].items
                                                       .removeWhere((e) => e.guid == item.guid);
                                                 }
 
+                                                BackpackService.updateBackpack(backpack, () {});
+
+                                                Navigator.pop(context);
+                                              },
+                                              padding: EdgeInsets.symmetric(horizontal: 5),
+                                              minWidth: 0,
+                                              child: Text(
+                                                "Remove",
+                                                style: TextStyle(
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            )
+                                          : Container(),
+                                      MaterialButton(
+                                        onPressed: () {
+                                          SessionVariables.lastPageContext = context;
+
+                                          if (item.title == null || item.title == "") {
+                                            Helper.showError("Add the item's title");
+
+                                            return;
+                                          }
+
+                                          if (item.compartmentGuid == null || item.compartmentGuid == "") {
+                                            Helper.showError("Add the item's compartment");
+
+                                            return;
+                                          }
+
+                                          if (compartment.items == null) {
+                                            compartment.items = <Item>[];
+                                          }
+
+                                          if (item.guid == null || item.guid == "") {
+                                            // new item
+
+                                            item.guid = Guid.newGuid.toString();
+                                          } else {
+                                            // edit item
+
+                                            for (var i = 0; i < compartment.items.length; i++) {
+                                              if (compartment.items[i].guid != item.guid) {
                                                 continue;
                                               }
 
-                                              compartment = backpack.compartments[i];
-                                              item.compartmentGuid = compartment.guid;
-
-                                              if (compartment.items == null) {
-                                                compartment.items = <Item>[];
-                                              }
-
-                                              compartment.items.add(item);
+                                              compartment.items[i] = item;
                                             }
-                                          });
-                                        },
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    item.guid != null && item.guid != ""
-                                        ? MaterialButton(
-                                            onPressed: () {
-                                              for (var i = 0; i < backpack.compartments.length; i++) {
-                                                if (backpack.compartments[i].guid != compartment.guid) {
-                                                  continue;
-                                                }
+                                          }
 
-                                                backpack.compartments[i].items
-                                                    .removeWhere((e) => e.guid == item.guid);
-                                              }
-
-                                              BackpackService.updateBackpack(backpack, () {});
-
-                                              Navigator.pop(context);
-                                            },
-                                            padding: EdgeInsets.symmetric(horizontal: 5),
-                                            minWidth: 0,
-                                            child: Text(
-                                              "Remove",
-                                              style: TextStyle(
-                                                color: Colors.red,
-                                              ),
-                                            ),
-                                          )
-                                        : Container(),
-                                    MaterialButton(
-                                      onPressed: () {
-                                        if (item.title == null || item.title == "") {
-                                          Helper.showError("Add the item's title");
-
-                                          return;
-                                        }
-
-                                        if (item.compartmentGuid == null || item.compartmentGuid == "") {
-                                          Helper.showError("Add the item's compartment");
-
-                                          return;
-                                        }
-
-                                        if (compartment.items == null) {
-                                          compartment.items = <Item>[];
-                                        }
-
-                                        if (item.guid == null || item.guid == "") {
-                                          // new item
-
-                                          item.guid = Guid.newGuid.toString();
-                                        } else {
-                                          // edit item
-
-                                          for (var i = 0; i < compartment.items.length; i++) {
-                                            if (compartment.items[i].guid != item.guid) {
+                                          for (var i = 0; i < backpack.compartments.length; i++) {
+                                            if (backpack.compartments[i].guid != compartment.guid) {
                                               continue;
                                             }
 
-                                            compartment.items[i] = item;
-                                          }
-                                        }
-
-                                        for (var i = 0; i < backpack.compartments.length; i++) {
-                                          if (backpack.compartments[i].guid != compartment.guid) {
-                                            continue;
+                                            backpack.compartments[i] = compartment;
                                           }
 
-                                          backpack.compartments[i] = compartment;
-                                        }
+                                          BackpackService.updateBackpack(backpack, () {});
 
-                                        BackpackService.updateBackpack(backpack, () {});
-
-                                        Navigator.pop(context);
-                                      },
-                                      padding: EdgeInsets.symmetric(horizontal: 5),
-                                      minWidth: 0,
-                                      child: Text(
-                                        item.guid != null && item.guid != "" ? "Edit" : "Add",
-                                        style: TextStyle(
-                                          color: Color(0xff00e34e),
+                                          Navigator.pop(context);
+                                        },
+                                        padding: EdgeInsets.symmetric(horizontal: 5),
+                                        minWidth: 0,
+                                        child: Text(
+                                          item.guid != null && item.guid != "" ? "Edit" : "Add",
+                                          style: TextStyle(
+                                            color: Color(0xff00e34e),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                )
-                              ],
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                )
-              ],
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
             );
           },
         ),
