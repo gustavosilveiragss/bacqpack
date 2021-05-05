@@ -19,12 +19,43 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   List<Backpack> backpacks = [];
+
+  var tabs = <Tab>[
+    Tab(
+      child: Text(
+        'Backpacks',
+        style: TextStyle(
+          color: Colors.black,
+        ),
+      ),
+    ),
+    Tab(
+      child: Text(
+        'Checklists',
+        style: TextStyle(
+          color: Colors.black,
+        ),
+      ),
+    ),
+  ];
+
+  int currentTab = 0;
+
+  TabController tabController;
 
   @override
   void initState() {
     super.initState();
+
+    tabController = TabController(length: tabs.length, vsync: this);
+
+    tabController.addListener(() {
+      setState(() {
+        currentTab = tabController.index;
+      });
+    });
   }
 
   @override
@@ -33,7 +64,10 @@ class _HomePageState extends State<HomePage> {
       body: Builder(builder: (context) {
         SessionVariables.lastPageContext = context;
 
-        return SafeArea(child: buildBody(context));
+        return DefaultTabController(
+          length: 2,
+          child: SafeArea(child: buildBody(context)),
+        );
       }),
       floatingActionButton: SpeedDial(
         icon: Icons.add,
@@ -83,7 +117,11 @@ class _HomePageState extends State<HomePage> {
 
   Widget buildBody(BuildContext context) {
     return StreamBuilder(
-      stream: databaseReference.onValue,
+      stream: databaseReference
+          .child("Backpacks")
+          .orderByChild("UserUid")
+          .equalTo(SessionVariables.userUid)
+          .onValue,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Container(
@@ -95,7 +133,7 @@ class _HomePageState extends State<HomePage> {
           );
         }
 
-        var backpackMaps = snapshot.data.snapshot.value["Backpacks"];
+        var backpackMaps = snapshot.data.snapshot.value;
 
         backpacks = [];
 
@@ -112,7 +150,24 @@ class _HomePageState extends State<HomePage> {
               'assets/svg/logo.svg',
               width: MediaQuery.of(context).size.width / 2,
             ),
-            buildBackpackList()
+            SizedBox(
+              height: 30,
+            ),
+            TabBar(
+              onTap: (index) {},
+              indicatorColor: Color(0xff1ac988),
+              controller: tabController,
+              tabs: tabs,
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: tabController,
+                children: [
+                  buildBackpackList(),
+                  Container(),
+                ],
+              ),
+            )
           ],
         );
       },

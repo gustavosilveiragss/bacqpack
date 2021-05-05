@@ -1,6 +1,5 @@
 import 'package:bacqpack/ui/components/add_compartment_modal.dart';
 import 'package:bacqpack/ui/components/add_item_modal.dart';
-import 'package:bacqpack/utils/session_variables.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bacqpack/model/backpack.dart';
@@ -67,13 +66,7 @@ class _BackpackManagerState extends State<BackpackManager> with TickerProviderSt
     return Scaffold(
       body: DefaultTabController(
         length: 2,
-        child: Builder(
-          builder: (context) {
-            //SessionVariables.lastPageContext = context;
-
-            return SafeArea(child: buildBody(context));
-          },
-        ),
+        child: SafeArea(child: buildBody(context)),
       ),
     );
   }
