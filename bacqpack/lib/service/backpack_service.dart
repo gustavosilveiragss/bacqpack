@@ -1,10 +1,14 @@
 import 'package:bacqpack/model/backpack.dart';
+import 'package:bacqpack/utils/session_variables.dart';
 
 import 'package:firebase_database/firebase_database.dart';
 
 class BackpackService {
   static void newBackpack(Backpack backpack, Function callback) async {
     var databaseReference = FirebaseDatabase.instance.reference();
+
+    // has to be from this user
+    backpack.userUid = SessionVariables.userUid;
 
     var snapshot = await databaseReference.child("Backpacks").once();
 
@@ -34,7 +38,15 @@ class BackpackService {
   static void updateBackpack(Backpack backpack, Function callback) async {
     var databaseReference = FirebaseDatabase.instance.reference();
 
-    var backpacks = (await databaseReference.child("Backpacks").once()).value;
+    // has to be from this user
+    backpack.userUid = SessionVariables.userUid;
+
+    var backpacks = (await databaseReference
+            .child("Backpacks")
+            .orderByChild("UserUid")
+            .equalTo(SessionVariables.userUid)
+            .once())
+        .value;
 
     for (var i = 0; i < backpacks.length; i++) {
       if (backpacks[i]["Guid"] != backpack.guid) {
@@ -44,7 +56,12 @@ class BackpackService {
       backpacks[i] = backpack.toJson();
     }
 
-    databaseReference.child("Backpacks").set(backpacks);
+    databaseReference
+        .child("Backpacks")
+        .orderByChild("UserUid")
+        .equalTo(SessionVariables.userUid)
+        .reference()
+        .set(backpacks);
 
     callback();
   }

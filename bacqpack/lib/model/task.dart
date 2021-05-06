@@ -4,14 +4,14 @@ class Task {
   String guid;
   String title; // required
   String description; // required
-  String taskGuid; // required
+  String checklistGuid; // required
   List<Item> items; // optional
 
   Task({
     this.guid,
     this.title,
     this.description,
-    this.taskGuid,
+    this.checklistGuid,
     this.items,
   });
 
@@ -41,7 +41,7 @@ class Task {
     task.guid = json['Guid'];
     task.title = json['Title'];
     task.description = json['Description'];
-    task.taskGuid = json['TaskGuid'];
+    task.checklistGuid = json['ChecklistGuid'];
 
     task.items = Item.fromJsonList(json['Items']);
 
@@ -59,7 +59,7 @@ class Task {
       'Guid': guid,
       'Title': title,
       'Description': description,
-      'TaskGuid': taskGuid,
+      'ChecklistGuid': checklistGuid,
       'Items': items,
     };
   }

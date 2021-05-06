@@ -1,3 +1,4 @@
+import 'package:bacqpack/service/checklist_service.dart';
 import 'package:bacqpack/utils/helper.dart';
 import 'package:flutter/material.dart';
 
@@ -60,6 +61,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    void a() async {
+      ChecklistService.newChecklist(await ChecklistService.buildChecklist(), () {});
+    }
+
+    a();
+
     return Scaffold(
       body: Builder(builder: (context) {
         SessionVariables.lastPageContext = context;
