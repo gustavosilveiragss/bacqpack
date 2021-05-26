@@ -10,13 +10,23 @@ class BackpackService {
     // has to be from this user
     backpack.userUid = SessionVariables.userUid;
 
-    var snapshot = await databaseReference.child("Backpacks").once();
+    var backpacks =
+        (await databaseReference.child("Backpacks").orderByChild("UserUid").equalTo(backpack.userUid).once())
+            .value;
 
-    var backpacks = List.of(snapshot.value);
+    // this list do be fixed so yeah
 
-    backpacks.add(backpack.toJson());
+    var tempBackpacks = List.from(backpacks);
 
-    databaseReference.child("Backpacks").set(backpacks);
+    // now you can add
+    tempBackpacks.add(backpack.toJson());
+
+    databaseReference
+        .child("Backpacks")
+        .orderByChild("UserUid")
+        .equalTo(backpack.userUid)
+        .reference()
+        .set(tempBackpacks);
 
     callback();
   }
@@ -24,13 +34,18 @@ class BackpackService {
   static void deleteBackpack(Backpack backpack, Function callback) async {
     var databaseReference = FirebaseDatabase.instance.reference();
 
-    var snapshot = await databaseReference.child("Backpacks").once();
-
-    var backpacks = List.of(snapshot.value);
+    var backpacks =
+        (await databaseReference.child("Backpacks").orderByChild("UserUid").equalTo(backpack.userUid).once())
+            .value;
 
     backpacks.removeWhere((e) => e["Guid"] == backpack.guid);
 
-    databaseReference.child("Backpacks").set(backpacks);
+    databaseReference
+        .child("Backpacks")
+        .orderByChild("UserUid")
+        .equalTo(backpack.userUid)
+        .reference()
+        .set(backpacks);
 
     callback();
   }
@@ -38,15 +53,9 @@ class BackpackService {
   static void updateBackpack(Backpack backpack, Function callback) async {
     var databaseReference = FirebaseDatabase.instance.reference();
 
-    // has to be from this user
-    backpack.userUid = SessionVariables.userUid;
-
-    var backpacks = (await databaseReference
-            .child("Backpacks")
-            .orderByChild("UserUid")
-            .equalTo(SessionVariables.userUid)
-            .once())
-        .value;
+    var backpacks =
+        (await databaseReference.child("Backpacks").orderByChild("UserUid").equalTo(backpack.userUid).once())
+            .value;
 
     for (var i = 0; i < backpacks.length; i++) {
       if (backpacks[i]["Guid"] != backpack.guid) {
@@ -59,7 +68,7 @@ class BackpackService {
     databaseReference
         .child("Backpacks")
         .orderByChild("UserUid")
-        .equalTo(SessionVariables.userUid)
+        .equalTo(backpack.userUid)
         .reference()
         .set(backpacks);
 

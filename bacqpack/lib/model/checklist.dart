@@ -3,12 +3,14 @@ import 'package:bacqpack/model/task.dart';
 
 class Checklist {
   String guid;
+  String userUid;
   String title; // required
   Backpack backpack; // required
   List<Task> tasks; // required
 
   Checklist({
     this.guid,
+    this.userUid,
     this.title,
     this.backpack,
     this.tasks,
@@ -38,6 +40,7 @@ class Checklist {
     var checklist = Checklist();
 
     checklist.guid = json['Guid'];
+    checklist.userUid = json['UserUid'];
     checklist.title = json['Title'];
 
     checklist.backpack = Backpack.fromJson(json['Backpack']);
@@ -55,6 +58,7 @@ class Checklist {
 
     return {
       'Guid': guid,
+      'UserUid': userUid,
       'Title': title,
       'Backpack': backpack.toJson(),
       'Tasks': jsonItems,
