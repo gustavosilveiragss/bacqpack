@@ -38,14 +38,19 @@ class BackpackService {
         (await databaseReference.child("Backpacks").orderByChild("UserUid").equalTo(backpack.userUid).once())
             .value;
 
-    backpacks.removeWhere((e) => e["Guid"] == backpack.guid);
+    // this list do be fixed so yeah
+
+    var tempBackpacks = List.from(backpacks);
+
+    // now ye be granted the permission to remove
+    tempBackpacks.removeWhere((e) => e["Guid"] == backpack.guid);
 
     databaseReference
         .child("Backpacks")
         .orderByChild("UserUid")
         .equalTo(backpack.userUid)
         .reference()
-        .set(backpacks);
+        .set(tempBackpacks);
 
     callback();
   }

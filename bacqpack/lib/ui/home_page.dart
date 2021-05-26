@@ -142,10 +142,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
         var backpackMaps = snapshot.data.snapshot.value;
 
-        backpacks = [];
+        if (backpackMaps != null && backpackMaps.isNotEmpty) {
+          backpacks = [];
 
-        for (var b in backpackMaps) {
-          backpacks.add(Backpack.fromJson(b));
+          for (var b in backpackMaps) {
+            backpacks.add(Backpack.fromJson(b));
+          }
         }
 
         return Column(
@@ -183,6 +185,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget buildBackpackList() {
     List<Widget> backpacksWidgets = [];
+
+    if (backpacks == null || backpacks.isEmpty) {
+      // TODO: add some warning or somethign here
+      return Container();
+    }
 
     for (var backpack in backpacks) {
       var backpackWidget = renderBackpackCard(backpack);
