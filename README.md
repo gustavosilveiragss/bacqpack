@@ -19,4 +19,3 @@ Any help is appreciated!
 #### Contact me
 If you want to talk to me about this project, you can find me here:
 * email: gustavo24gss@gmail.com
-* twitter: @marmotadesigual 
