@@ -9,7 +9,7 @@ The app allows you to:
 * **add multiple backpacks**, 
 * **personalize the containers in each backpack**, 
 * **add items to each container and find everything with ease**
-* **add checklists to prepare your backpack easier and never forget anything**
+* **add checklists to prepare your backpack easier (unfinished)**
 
 ### Contribute!
 I'm not always working in this project and personally love open-source projects, so **Bacqpack is open-source**.
